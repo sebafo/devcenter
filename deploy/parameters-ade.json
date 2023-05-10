@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "basePrefix": {
+            "value": ""
+        },
+        "location": {
+            "value": "westeurope"
+        },
+        "gitHubUrl": {
+            "value": "https://github.com/sebafo/devcenter.git"
+        },
+        "gitHubPath": {
+            "value": "/ade-catalog"
+        },
+        "deployAde": {
+            "value": true
+        },
+        "projectAdminIds": {
+            "value": []
+        },
+        "projectAdeUserIds": {
+            "value": []
+        }
+    }
+  }

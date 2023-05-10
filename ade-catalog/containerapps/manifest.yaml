@@ -1,0 +1,13 @@
+name: ContainerAppsEnvironment
+version: 1.0.0
+summary: Container Apps Environment
+description: Deploys a Container Apps Environment without Apps
+runner: ARM
+templatePath: azuredeploy.json
+
+parameters:
+  - id: baseName
+    name: BaseName
+    description: 'Base name of the Container Apps Environment (used as a prefix for all resources)'
+    type: string
+    required: true
