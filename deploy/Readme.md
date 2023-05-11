@@ -1,3 +1,3 @@
 # Deployment
 
-az deployment sub create --template-file main.bicep --parameters parameters-ade.json
+az deployment sub create --name devcenter-deployment --template-file main.bicep --parameters parameters.json

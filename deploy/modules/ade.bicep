@@ -5,22 +5,31 @@ param basePrefix string = 'dev0'
 @description('Location of the resources')
 param location string = resourceGroup().location
 
-@description('KeyVault with GitHub PAT')
+@description('Name of the KeyVaul to store the GitHub PAT')
 param keyVaultName string
 
-@description('DevCenter name')
+@description('Name of the DevCenter')
 param devcenterName string = '${basePrefix}-devcenter'
 
-@description('Project name')
+@description('Name of the Project')
 param projectName string = '${basePrefix}-project'
 
+@description('Name of the Devcenter identity')
 param identityName string = '${basePrefix}-dc-id'
 
+@description('Name of the Devcenter deployment environment catalog')
 param catalogName string = '${basePrefix}-catalog'
+
 param gitHubUrl string
 param gitHubBranch string = 'main'
 param gitHubPath string
 param gitHubTokenPath string
+
+@description('List of User ids to assign to the project admin role')
+param projectAdminIds array = []
+
+@description('List of User ids to assign to the project ADE user role')
+param projectAdeUserIds array = []
 
 // Read existing resources
 resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' existing = {
@@ -115,6 +124,35 @@ resource projectEnvironment 'Microsoft.DevCenter/projects/environmentTypes@2022-
     environment
   ]
 }
+
+// Role Assignments for Devployment Environment
+resource deploymentEnvironmentUserRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '18e40d4e-8d2e-438d-97e1-9528336e149c'
+}
+
+resource adeUsersAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for userId in projectAdeUserIds: {
+  scope: project
+  name: guid(project.name, userId, deploymentEnvironmentUserRole.id)
+  properties: {
+    roleDefinitionId: deploymentEnvironmentUserRole.id
+    principalId: userId
+    principalType: 'User'
+  }
+}]
+
+resource devcenterProjectAdminRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: '331c37c6-af14-46d9-b9f4-e1909e1b95a0'
+}
+
+resource projectAdminAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for userId in projectAdminIds: {
+  scope: project
+  name: guid(project.name, userId, devcenterProjectAdminRole.id)
+  properties: {
+    roleDefinitionId: devcenterProjectAdminRole.id
+    principalId: userId
+    principalType: 'User'
+  }
+}]
 
 output adeIdentityPrincipalId string = adeIdentity.properties.principalId
 output projectEnv string = projectEnvironment.properties.status

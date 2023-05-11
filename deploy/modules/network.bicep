@@ -53,3 +53,5 @@ resource devcenterNetworkConnectionAttach 'Microsoft.DevCenter/devcenters/attach
     networkConnectionId: devcenterNetworkConnection.id
   }
 }
+
+output networkConnectionName string = devcenterNetworkConnection.name
