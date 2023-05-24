@@ -7,7 +7,7 @@ param location string = resourceGroup().location
 @description('Name of the DevCenter')
 param devcenterName string = '${basePrefix}-devcenter'
 
-resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' existing = {
+resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
 
@@ -37,7 +37,7 @@ resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
   }
 }
 
-resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2022-11-11-preview' = {
+resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2023-04-01' = {
   name: '${basePrefix}-ncon'
   location: location
   properties: {
@@ -46,7 +46,7 @@ resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2022
   }
 }
 
-resource devcenterNetworkConnectionAttach 'Microsoft.DevCenter/devcenters/attachednetworks@2022-11-11-preview' = {
+resource devcenterNetworkConnectionAttach 'Microsoft.DevCenter/devcenters/attachednetworks@2023-04-01' = {
   parent: devcenter
   name: '${basePrefix}-ncon'
   properties: {

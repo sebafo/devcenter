@@ -12,7 +12,7 @@ resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' 
   location: location
 }
 
-resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' = {
+resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' = {
   name: devcenterName
   location: location
   identity: {

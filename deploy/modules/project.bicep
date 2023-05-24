@@ -10,11 +10,11 @@ param devcenterName string = '${basePrefix}-devcenter'
 @description('Name of the Project')
 param projectName string = '${basePrefix}-project'
 
-resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' existing = {
+resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
 
-resource project 'Microsoft.DevCenter/projects@2022-11-11-preview' = {
+resource project 'Microsoft.DevCenter/projects@2023-04-01' = {
   name: projectName
   location: location
   properties: {
