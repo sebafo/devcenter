@@ -25,19 +25,20 @@ param devBoxDefinitionName string = '${basePrefix}-devbox1'
 @description('Name of the DevBox Pool in the project')
 param projectPoolName string = '${basePrefix}-pool1'
 
-resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' existing = {
+resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
-resource project 'Microsoft.DevCenter/projects@2022-11-11-preview' existing = {
+resource project 'Microsoft.DevCenter/projects@2023-04-01' existing = {
   name: projectName
 }
 
-resource devboxDefinition 'Microsoft.DevCenter/devcenters/devboxdefinitions@2022-11-11-preview' = {
+resource devboxDefinition 'Microsoft.DevCenter/devcenters/devboxdefinitions@2023-04-01' = {
   parent: devcenter
   name: devBoxDefinitionName
   location: location
   properties: {
     imageReference: {
+#disable-next-line use-resource-id-functions
       id: '${resourceId('Microsoft.DevCenter/devcenters/galleries', devcenterName, 'Default')}/images/microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2'
     }
     sku: {
@@ -47,7 +48,7 @@ resource devboxDefinition 'Microsoft.DevCenter/devcenters/devboxdefinitions@2022
   }
 }
 
-resource projectPool 'Microsoft.DevCenter/projects/pools@2022-11-11-preview' = {
+resource projectPool 'Microsoft.DevCenter/projects/pools@2023-04-01' = {
   parent: project
   name: projectPoolName
   location: location
@@ -59,7 +60,7 @@ resource projectPool 'Microsoft.DevCenter/projects/pools@2022-11-11-preview' = {
   }
 }
 
-resource projectPoolSettings 'Microsoft.DevCenter/projects/pools/schedules@2022-11-11-preview' = {
+resource projectPoolSettings 'Microsoft.DevCenter/projects/pools/schedules@2023-04-01' = {
   parent: projectPool
   name: 'default'
   properties: {

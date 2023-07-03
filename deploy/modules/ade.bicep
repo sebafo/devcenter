@@ -32,11 +32,11 @@ param projectAdminIds array = []
 param projectAdeUserIds array = []
 
 // Read existing resources
-resource devcenter 'Microsoft.DevCenter/devcenters@2022-11-11-preview' existing = {
+resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
 
-resource project 'Microsoft.DevCenter/projects@2022-11-11-preview' existing = {
+resource project 'Microsoft.DevCenter/projects@2023-04-01' existing = {
   name: projectName
 }
 
@@ -66,7 +66,7 @@ resource roleAssignement 'Microsoft.Authorization/roleAssignments@2022-04-01' = 
 
 // DevCenter Resources
 // Create the catalog
-resource catalog 'Microsoft.DevCenter/devcenters/catalogs@2022-11-11-preview' = {
+resource catalog 'Microsoft.DevCenter/devcenters/catalogs@2023-04-01' = {
   name: catalogName
   parent: devcenter
   properties: {
@@ -84,7 +84,7 @@ resource catalog 'Microsoft.DevCenter/devcenters/catalogs@2022-11-11-preview' = 
 }
 
 // Create an environment in DevCenter
-resource environment 'Microsoft.DevCenter/devcenters/environmentTypes@2022-11-11-preview' = {
+resource environment 'Microsoft.DevCenter/devcenters/environmentTypes@2023-04-01' = {
   name: 'dev'
   parent: devcenter
 }
