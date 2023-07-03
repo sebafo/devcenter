@@ -38,6 +38,7 @@ resource devboxDefinition 'Microsoft.DevCenter/devcenters/devboxdefinitions@2023
   location: location
   properties: {
     imageReference: {
+#disable-next-line use-resource-id-functions
       id: '${resourceId('Microsoft.DevCenter/devcenters/galleries', devcenterName, 'Default')}/images/microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2'
     }
     sku: {

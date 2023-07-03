@@ -16,6 +16,7 @@ resource ownerRoleAssignement 'Microsoft.Authorization/roleAssignments@2022-04-0
   name: guid(subscription().id, identityId, ownerRoleDefinition.id)
   properties: {
     principalId: identityId
+    principalType: 'ServicePrincipal'
     roleDefinitionId: ownerRoleDefinition.id
   }
 }]
