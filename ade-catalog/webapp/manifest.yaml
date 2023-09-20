@@ -1,0 +1,14 @@
+# yaml-language-server: $schema=https://github.com/Azure/deployment-environments/releases/download/2022-11-11-preview/manifest.schema.json
+name: WebApp
+version: 1.0.0
+summary: Azure Web App
+description: Deploys an Azure Web App
+runner: ARM
+templatePath: azuredeploy.json
+
+parameters:
+  - id: webAppName
+    name: Name
+    description: 'Name of the Web App.'
+    type: string
+    required: false
