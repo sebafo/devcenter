@@ -2,7 +2,7 @@
 
 <mark>PROJECT IS STILL UNDER CONSTRUCTION!<mark>
 
-<mark>DevBox and Azure Deployment Environment (ADE) are currently in preview. This project is not intended for production use.</mark>
+<mark>This project is not intended for production use.</mark>
 
 # Azure Dev Center
 
