@@ -42,9 +42,9 @@ resource devboxDefinition 'Microsoft.DevCenter/devcenters/devboxdefinitions@2023
       id: '${resourceId('Microsoft.DevCenter/devcenters/galleries', devcenterName, 'Default')}/images/microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2'
     }
     sku: {
-      name: 'general_a_8c32gb_v1'
+      name: 'general_i_8c32gb256ssd_v2'
     }
-    osStorageType: 'ssd_512gb'
+    osStorageType: 'ssd_256gb'
   }
 }
 
