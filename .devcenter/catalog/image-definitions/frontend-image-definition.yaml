@@ -23,4 +23,4 @@ tasks:
   ### Run the DSC configuration for the frontend engineering environment
   - name: winget
     parameters:
-      configurationFile: '../configuration/frontend.dsc.yaml'
+      downloadUrl: 'https://raw.githubusercontent.com/sebafo/devcenter/main/.devcenter/catalog/configuration/frontend.dsc.yaml'
