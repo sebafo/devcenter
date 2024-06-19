@@ -2,10 +2,12 @@ $schema: "1.0"
 name: "frontend-image"
 description: "This definition is for the podcast frontend engineering environment"
 
+## PRIVATE PREVIEW FEATURE
 image: "microsoftvisualstudio_windowsplustools_base-win11-gen2"
 enableScheduledRefresh: true
 scheduledTimePeriod: hour
 scheduledRecurrence: 24
+##
 
 tasks:
   ### Run common DSC configurations for contoso engineering environments to create Dev Drive and install common tools
