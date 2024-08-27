@@ -6,28 +6,40 @@
             "value": ""
         },
         "location": {
-            "value": "westeurope"
+            "value": ""
         },
-        "gitHubUrl": {
-            "value": "https://github.com/sebafo/devcenter.git"
-        },
-        "gitHubPath": {
-            "value": "/ade-catalog"
+        "deployDevBox": {
+            "value": false
         },
         "deployAde": {
-            "value": true
+            "value": false
+        },
+        "deployPodcastExample": {
+            "value": false
         },
         "projectAdminIds": {
+            "value": []
+        },
+        "projectDevBoxUserIds": {
             "value": []
         },
         "projectAdeUserIds": {
             "value": []
         },
-        "deployDevBox": {
-            "value": true
+        "gitHubUrl": {
+            "value": ""
         },
-        "projectDevBoxUserIds": {
-            "value": []
+        "gitHubPath": {
+            "value": ""
+        },
+        "gitHubAppOwner": {
+            "value": ""
+        },
+        "gitHubAppRepository": {
+            "value": ""
+        },
+        "gitHubAppBranch": {
+            "value": ""
         }
     }
-  }
+}

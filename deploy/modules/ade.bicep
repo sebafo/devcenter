@@ -5,9 +5,6 @@ param basePrefix string = 'dev0'
 @description('Location of the resources')
 param location string = resourceGroup().location
 
-@description('Name of the KeyVaul to store the GitHub PAT')
-param keyVaultName string
-
 @description('Name of the DevCenter')
 param devcenterName string = '${basePrefix}-devcenter'
 
@@ -23,7 +20,19 @@ param catalogName string = '${basePrefix}-catalog'
 param gitHubUrl string
 param gitHubBranch string = 'main'
 param gitHubPath string
-param gitHubTokenPath string
+
+@secure()
+@description('PAT for the GitHub repository')
+param gitHubPat string = ''
+
+@description('GitHub Repository')
+param gitHubAppRepository string
+
+@description('GitHub Branch')
+param gitHubAppBranch string
+
+@description('GitHub Owner')
+param gitHubAppOwner string
 
 @description('List of User ids to assign to the project admin role')
 param projectAdminIds array = []
@@ -40,27 +49,13 @@ resource project 'Microsoft.DevCenter/projects@2023-04-01' existing = {
   name: projectName
 }
 
-resource identity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = {
-  name: identityName
-}
-
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
-}
-
-// Role assignment for the identity to access Key Vault
-@description('This is the built-in Azure KeyVault Secrets User role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#key-vault-secrets-user')
-resource secretsUserRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
-  scope: subscription()
-  name: '4633458b-17de-408a-b874-0445c86b69e6'
-}
-
-resource roleAssignement 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  scope: keyVault
-  name: guid(resourceGroup().id, identity.id, secretsUserRoleDefinition.id)
-  properties: {
-    principalId: identity.properties.principalId
-    roleDefinitionId: secretsUserRoleDefinition.id
+module keyVault './keyvault.bicep' = {
+  name: '${basePrefix}-keyvault'
+  params: {
+    basePrefix: basePrefix
+    location: location
+    gitHubPat: gitHubPat
+    identityName: identityName
   }
 }
 
@@ -74,12 +69,12 @@ resource catalog 'Microsoft.DevCenter/devcenters/catalogs@2023-04-01' = {
       uri: gitHubUrl
       branch: gitHubBranch
       path: gitHubPath
-      secretIdentifier: gitHubTokenPath
+      secretIdentifier: keyVault.outputs.secretUri
     }
   }
 
   dependsOn: [
-    roleAssignement
+    keyVault
   ]
 }
 
@@ -96,11 +91,29 @@ resource adeIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-3
 }
 
 @description('This is the built-in Owner role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner')
-resource ownerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01-preview' existing = {
+resource ownerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
 
-resource projectEnvironment 'Microsoft.DevCenter/projects/environmentTypes@2022-09-01-preview' = {
+@description('This is the built-in Contributer role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner')
+resource contributerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+}
+
+@description('This is the built-in Reader role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner')
+resource readerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
+  name: 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
+}
+
+var environmentTypeUserRoleAssignments = map(projectAdeUserIds, usr => {
+  '${usr}': {
+    roles: {
+      '${readerRoleDefinition.name}': {}
+    }
+  }
+})
+
+resource projectEnvironment 'Microsoft.DevCenter/projects/environmentTypes@2023-04-01' = {
   name: 'dev'
   location: location
   identity: {
@@ -113,10 +126,11 @@ resource projectEnvironment 'Microsoft.DevCenter/projects/environmentTypes@2022-
   properties: {
     creatorRoleAssignment: {
       roles: {
-        '${ownerRoleDefinition.name}': {}
+        '${contributerRoleDefinition.name}': {}
       }
     }
-#disable-next-line use-resource-id-functions
+    userRoleAssignments: reduce(environmentTypeUserRoleAssignments, {}, (cur, next) => union(cur, next))
+    #disable-next-line use-resource-id-functions
     deploymentTargetId: subscription().id
     status: 'Enabled'
   }
@@ -154,5 +168,18 @@ resource projectAdminAssignment 'Microsoft.Authorization/roleAssignments@2022-04
   }
 }]
 
+module gitHubAppIdentity 'githubIdentity.bicep' = if (gitHubAppRepository != '') {
+  name: '${basePrefix}-github-identity'
+  params: {
+    basePrefix: basePrefix
+    location: location
+    gitHubAppRepository: gitHubAppRepository
+    gitHubAppBranch: gitHubAppBranch
+    gitHubAppOwner: gitHubAppOwner
+  }
+}
+
 output adeIdentityPrincipalId string = adeIdentity.properties.principalId
 output projectEnv string = projectEnvironment.properties.status
+output gitHubAppIdentityPrincipalId string = gitHubAppRepository != '' ? gitHubAppIdentity.outputs.identityPrincipalId : ''
+output gitHubAppIdentityClientId string = gitHubAppRepository != '' ? gitHubAppIdentity.outputs.identityClientId : ''

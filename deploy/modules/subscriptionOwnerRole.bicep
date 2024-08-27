@@ -12,7 +12,7 @@ resource ownerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2018-01-01
   name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
 
-resource ownerRoleAssignement 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for identityId in identityPrincipalIds: {
+resource ownerRoleAssignement 'Microsoft.Authorization/roleAssignments@2022-04-01' = [for identityId in identityPrincipalIds: if (identityId != '') {
   name: guid(subscription().id, identityId, ownerRoleDefinition.id)
   properties: {
     principalId: identityId
