@@ -1,8 +1,6 @@
-# DISCLAIMER
+# A simple Azure DevCenter example w/ DevBox & ADE
 
-<mark>PROJECT IS STILL UNDER CONSTRUCTION!<mark>
-
-<mark>This project is not intended for production use.</mark>
+<mark>Not intended for production use<mark>
 
 # Azure Dev Center
 
