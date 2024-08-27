@@ -54,6 +54,11 @@ az bicep build --file main.bicep --outfile azuredeploy.json
 ### Deployment Environment User URL
 https://devportal.microsoft.com
 
-## Check
-
-TODO
+## Podcast App example
+1) Infrastructure code is located in /deploy
+2) Provide the relevant parameters in a parameters file (e.g. parameters-podcast.json) - Make sure to set only **deployPodcastExample** to **true**
+3) Deploy the Podcast App infrastructure with the following command:
+```
+az deployment sub create --template-file main.bicep --parameters parameters-podcast.json
+```
+4) Alternatively you can use the deploy.sh file to deploy the infrastructure
