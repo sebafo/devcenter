@@ -21,7 +21,7 @@ jobs:
     - name: Decode JSON secret
       id: decode_json
       run: |
-        echo "${{ secrets.PARAMETERS_PODCAST_JSON }}" > parameters.json
+        echo "${{ vars.PARAMETERS_PODCAST_JSON }}" > parameters.json
 
     - name: Azure CLI script file
       uses: azure/cli@v2
@@ -29,4 +29,4 @@ jobs:
         inlineScript: |
           BASE_PREFIX=$(jq -r '.parameters.basePrefix.value' parameters.json)
           DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
-          az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters.json
+          az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
