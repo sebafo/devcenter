@@ -22,10 +22,16 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
+    - name: create-json
+      uses: jsdaniell/create-json@v1.2.3
+      with:
+        name: parameters.json
+        json: ${{ vars.PARAMETERS_PODCAST_JSON }}
+      
+
     - name: Decode JSON secret
       id: decode_json
       run: |
-        echo "${{ vars.PARAMETERS_PODCAST_JSON }}" > parameters.json
         echo "BASE_PREFIX=fromJSON(parameters.json).parameters.basePrefix.value" >> $GITHUB_ENV
         echo "LOCATION=fromJSON(parameters.json).parameters.location.value" >> $GITHUB_ENV
 
