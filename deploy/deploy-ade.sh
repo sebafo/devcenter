@@ -1,6 +1,7 @@
 # Deployment
 BASE_PREFIX=<set your prefix>
 DEPLOYMENT_NAME=$BASE_PREFIX-deployment-$(date +%s)
+LOCATION='northeurope'
 
 ## Set GitHub PAT
 ### Add your GitHub PAT
@@ -9,4 +10,4 @@ DEPLOYMENT_NAME=$BASE_PREFIX-deployment-$(date +%s)
 GITHUB_PAT=''
 
 ## Start deployment
-az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters-ade.json --parameter gitHubPat=$GITHUB_PAT basePrefix=$BASE_PREFIX
+az deployment sub create --name $DEPLOYMENT_NAME --location $LOCATION --template-file main.bicep --parameters parameters-ade.json --parameter gitHubPat=$GITHUB_PAT basePrefix=$BASE_PREFIX
