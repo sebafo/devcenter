@@ -41,4 +41,4 @@ resource catalog 'Microsoft.DevCenter/devcenters/catalogs@2023-04-01' = if (enab
 
 output devcenterId string = devcenter.id
 output devcenterName string = devcenter.name
-output devcenterIdentityPricipalId string = devcenter.identity.principalId
+output devcenterIdentityPricipalId string = identity.properties.principalId
