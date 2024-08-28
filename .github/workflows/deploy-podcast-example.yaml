@@ -32,8 +32,8 @@ jobs:
     - name: Decode JSON secret
       id: decode_json
       run: |
-        echo "BASE_PREFIX=fromJSON(parameters.json).parameters.basePrefix.value" >> $GITHUB_ENV
-        echo "LOCATION=fromJSON(parameters.json).parameters.location.value" >> $GITHUB_ENV
+        echo "BASE_PREFIX=$(jq -r '.parameters.basePrefix.value' parameters.json)" >> $GITHUB_ENV
+        echo "LOCATION=$(jq -r '.parameters.location.value' parameters.json)" >> $GITHUB_ENV
 
     - name: Azure CLI script file
       uses: azure/cli@v2
