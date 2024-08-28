@@ -91,6 +91,7 @@ resource adeIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-3
 }
 
 @description('This is the built-in Owner role. See https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#owner')
+#disable-next-line no-unused-existing-resources
 resource ownerRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '8e3af657-a8ff-443c-a75c-2fe8c4bcb635'
 }
@@ -139,7 +140,18 @@ resource projectEnvironment 'Microsoft.DevCenter/projects/environmentTypes@2023-
   ]
 }
 
-// Role Assignments for Devployment Environment
+module gitHubAppIdentity 'githubIdentity.bicep' = if (gitHubAppRepository != '') {
+  name: '${basePrefix}-github-identity'
+  params: {
+    basePrefix: basePrefix
+    location: location
+    gitHubAppRepository: gitHubAppRepository
+    gitHubAppBranch: gitHubAppBranch
+    gitHubAppOwner: gitHubAppOwner
+  }
+}
+
+// Role Assignments for Deployment Environment
 resource deploymentEnvironmentUserRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '18e40d4e-8d2e-438d-97e1-9528336e149c'
 }
@@ -154,6 +166,16 @@ resource adeUsersAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01'
   }
 }]
 
+resource adeGitHubIdentityAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (gitHubAppRepository != '') {
+  scope: project
+  name: guid(project.name, gitHubAppRepository, deploymentEnvironmentUserRole.id)
+  properties: {
+    roleDefinitionId: deploymentEnvironmentUserRole.id
+    principalId: gitHubAppIdentity.outputs.identityPrincipalId
+    principalType: 'System'
+  }
+}
+
 resource devcenterProjectAdminRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing = {
   name: '331c37c6-af14-46d9-b9f4-e1909e1b95a0'
 }
@@ -167,17 +189,6 @@ resource projectAdminAssignment 'Microsoft.Authorization/roleAssignments@2022-04
     principalType: 'User'
   }
 }]
-
-module gitHubAppIdentity 'githubIdentity.bicep' = if (gitHubAppRepository != '') {
-  name: '${basePrefix}-github-identity'
-  params: {
-    basePrefix: basePrefix
-    location: location
-    gitHubAppRepository: gitHubAppRepository
-    gitHubAppBranch: gitHubAppBranch
-    gitHubAppOwner: gitHubAppOwner
-  }
-}
 
 output adeIdentityPrincipalId string = adeIdentity.properties.principalId
 output projectEnv string = projectEnvironment.properties.status
