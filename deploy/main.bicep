@@ -98,7 +98,7 @@ module podcastApp './modules/podcastExample.bicep' = if (deployPodcastExample) {
     basePrefix: basePrefix
     location: location
     devcenterName: devcenter.outputs.devcenterName
-    devcenterManagedIdentityId: devcenter.outputs.devcenterId
+    devcenterManagedIdentityId: devcenter.outputs.devcenterIdentityPricipalId
     projectAdminIds: projectAdminIds
     projectDevBoxUserIds: projectDevBoxUserIds
   }

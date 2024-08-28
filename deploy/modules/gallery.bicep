@@ -11,7 +11,7 @@ param devcenterName string = '${basePrefix}-devcenter'
 param computeGalleryName string = replace('${basePrefix}gallery', '-', '')
 
 @description('Identity of the DevCenter')
-param devcenterManagedIdentityId string = '${basePrefix}-devcenter-id'
+param devcenterManagedIdentityId string
 
 // Variables
 var CONTRIBUTOR_ROLE = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
