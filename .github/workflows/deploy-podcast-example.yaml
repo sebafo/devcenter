@@ -26,11 +26,11 @@ jobs:
       id: decode_json
       run: |
         echo "${{ vars.PARAMETERS_PODCAST_JSON }}" > parameters.json
-        echo "BASE_PREFIX=$(jq -r '.basePrefix' parameters.json)" >> $GITHUB_ENV
+        echo "BASE_PREFIX=fromJSON(parameters.json).parameters.basePrefix.value" >> $GITHUB_ENV
 
-    - name: Azure CLI script file
-      uses: azure/cli@v2
-      with:
-        inlineScript: |
-          DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
-          az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
+    # - name: Azure CLI script file
+    #   uses: azure/cli@v2
+    #   with:
+    #     inlineScript: |
+    #       DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
+    #       az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
