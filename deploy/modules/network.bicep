@@ -7,12 +7,18 @@ param location string = resourceGroup().location
 @description('Name of the DevCenter')
 param devcenterName string = '${basePrefix}-devcenter'
 
+@description('Name of the Network')
+param networkName string = '${basePrefix}-vnet'
+
+@description('Name of the Network connection')
+param networkConnectionName string = '${basePrefix}-ncon'
+
 resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
 
 resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
-  name: '${basePrefix}-vnet'
+  name: networkName
   location: location
   properties: {
     addressSpace: {
@@ -38,7 +44,7 @@ resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
 }
 
 resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2023-04-01' = {
-  name: '${basePrefix}-ncon'
+  name: networkConnectionName
   location: location
   properties: {
     domainJoinType: 'AzureADJoin'
@@ -48,7 +54,7 @@ resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2023
 
 resource devcenterNetworkConnectionAttach 'Microsoft.DevCenter/devcenters/attachednetworks@2023-04-01' = {
   parent: devcenter
-  name: '${basePrefix}-ncon'
+  name: networkConnectionName
   properties: {
     networkConnectionId: devcenterNetworkConnection.id
   }

@@ -9,13 +9,23 @@ param basePrefix string
 param resourceGroupName string = '${basePrefix}-rg'
 
 @description('Location of the resources')
-param location string = 'westeurope'
+param location string = 'northeurope'
 
 @description('Name of the DevCenter')
 param devcenterName string = '${basePrefix}-devcenter'
 
 @description('Name of the Project')
 param projectName string = '${basePrefix}-project'
+
+// Conditional Parameters
+@description('Deploy DevBox resources')
+param deployDevBox bool = false
+
+@description('Deploy ADE resources')
+param deployAde bool = false
+
+@description('Deploy Podcast Example')
+param deployPodcastExample bool = false
 
 // ADE GitHub parameters
 @description('Path in the GitHub repository')
@@ -28,20 +38,6 @@ param gitHubUrl string = ''
 @description('PAT for the GitHub repository')
 param gitHubPat string = ''
 
-// Conditional Parameters
-@description('Deploy DevBox resources')
-param deployDevBox bool = false
-
-@description('Deploy ADE resources')
-param deployAde bool = false
-
-// DevBox parmeters - currently only one project, one DevBox definition and one pool is supported in this repo. TODO: make this more flexible
-@description('Name of the DevBox Definition in the DevCenter')
-param devBoxDefinitionName string = '${basePrefix}-devbox1'
-
-@description('Name of the DevBox Pool in the project')
-param projectDevBoxPoolName string = '${basePrefix}-pool1'
-
 // Role Assignments
 @description('List of User ids to assign to the project admin role')
 param projectAdminIds array = []
@@ -51,6 +47,16 @@ param projectDevBoxUserIds array = []
 
 @description('List of User ids to assign to the project ADE user role')
 param projectAdeUserIds array = []
+
+// Integrate with GitHub Actions in a GitHub repository
+@description('GitHub Repository')
+param gitHubAppRepository string = ''
+
+@description('GitHub Branch')
+param gitHubAppBranch string = ''
+
+@description('GitHub Owner')
+param gitHubAppOwner string = ''
 
 // Deployments
 resource rg 'Microsoft.Resources/resourceGroups@2021-04-01' = {
@@ -64,26 +70,20 @@ module devcenter './modules/devcenter.bicep' = {
   params: {
     basePrefix: basePrefix
     location: location
+    enableCustomizations: true
   }
 }
 
-module project './modules/project.bicep' = {
+module devBox './modules/simpleExample.bicep' = if (deployDevBox || deployAde) {
   scope: resourceGroup(rg.name)
-  name: projectName
+  name: '${basePrefix}-devbox'
   params: {
     basePrefix: basePrefix
     location: location
     devcenterName: devcenter.outputs.devcenterName
-  }
-}
-
-module network './modules/network.bicep' = if (deployDevBox) {
-  scope: resourceGroup(rg.name)
-  name: '${basePrefix}-network'
-  params: {
-    basePrefix: basePrefix
-    location: location
-    devcenterName: devcenter.outputs.devcenterName
+    projectName: projectName
+    projectDevBoxUserIds: projectDevBoxUserIds
+    projectAdminIds: projectAdminIds
   }
 
   dependsOn: [
@@ -91,63 +91,49 @@ module network './modules/network.bicep' = if (deployDevBox) {
   ]
 }
 
-module devBox './modules/devbox.bicep' = if (deployDevBox) {
+module podcastApp './modules/podcastExample.bicep' = if (deployPodcastExample) {
   scope: resourceGroup(rg.name)
-  name: '${basePrefix}-devbox'
+  name: '${basePrefix}-podcast'
   params: {
     basePrefix: basePrefix
     location: location
     devcenterName: devcenter.outputs.devcenterName
-    projectName: project.outputs.projectName
-    devcenterNetworkConnectionName: deployDevBox ? network.outputs.networkConnectionName : ''
-    devBoxDefinitionName: devBoxDefinitionName
-    projectPoolName: projectDevBoxPoolName
+    devcenterManagedIdentityId: devcenter.outputs.devcenterId
     projectAdminIds: projectAdminIds
     projectDevBoxUserIds: projectDevBoxUserIds
   }
 
   dependsOn: [
-    devcenter, network
+    devcenter
   ]
 }
 
-module keyVault './modules/keyvault.bicep' = if (deployAde) {
+module ade './modules/ade.bicep' = if (deployAde || deployPodcastExample) {  
   scope: resourceGroup(rg.name)
-  name: '${basePrefix}-keyvault'
+  name: '${basePrefix}-podcast-ade'
   params: {
     basePrefix: basePrefix
     location: location
-    gitHubPat: gitHubPat
-  }
-}
-
-module ade './modules/ade.bicep' = if (deployAde) {
-  scope: resourceGroup(rg.name)
-  name: '${basePrefix}-ade'
-  params: {
-    basePrefix: basePrefix
-    location: location
-    projectName: project.outputs.projectName
-    keyVaultName: deployAde ? keyVault.outputs.keyVaultName : ''
+    projectName: (deployPodcastExample) ? podcastApp.outputs.projectName : projectName
     gitHubPath: gitHubPath
     gitHubUrl: gitHubUrl
-    gitHubTokenPath: deployAde ? keyVault.outputs.secretUri : ''
+    gitHubPat: gitHubPat
     projectAdeUserIds: projectAdeUserIds
     projectAdminIds: projectAdminIds
+    gitHubAppBranch: gitHubAppBranch
+    gitHubAppOwner: gitHubAppOwner
+    gitHubAppRepository: gitHubAppRepository
   }
 
   dependsOn: [
-    keyVault
+    podcastApp, devBox
   ]
 }
 
-module AdeIdOwnerRoleAssignement './modules/subscriptionOwnerRole.bicep' = if (deployAde) {
+module AdeIdOwnerRoleAssignement './modules/subscriptionOwnerRole.bicep' = if (deployAde || deployPodcastExample) {
   name: '${basePrefix}-owner-identity'
   params: {
-    identityPrincipalIds: deployAde ? [ade.outputs.adeIdentityPrincipalId, devcenter.outputs.devcenterIdentityPricipalId] : []
+    identityPrincipalIds: [ade.outputs.adeIdentityPrincipalId, devcenter.outputs.devcenterIdentityPricipalId, ade.outputs.gitHubAppIdentityPrincipalId]
   }
-
-  dependsOn: [
-    ade
-  ]
 }
+

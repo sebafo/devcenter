@@ -1,0 +1,30 @@
+name: Deploy Podcast App Example
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Azure CLI Login
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Decode JSON secret
+      id: decode_json
+      run: |
+        echo "${{ vars.PARAMETERS_PODCAST_JSON }}" > parameters.json
+
+    - name: Azure CLI script file
+      uses: azure/cli@v2
+      with:
+        inlineScript: |
+          BASE_PREFIX=$(jq -r '.parameters.basePrefix.value' parameters.json)
+          DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
+          az deployment sub create --name $DEPLOYMENT_NAME --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
