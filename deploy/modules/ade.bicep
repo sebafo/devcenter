@@ -172,7 +172,7 @@ resource adeGitHubIdentityAssignment 'Microsoft.Authorization/roleAssignments@20
   properties: {
     roleDefinitionId: deploymentEnvironmentUserRole.id
     principalId: gitHubAppIdentity.outputs.identityPrincipalId
-    principalType: 'System'
+    principalType: 'ServicePrincipal'
   }
 }
 
