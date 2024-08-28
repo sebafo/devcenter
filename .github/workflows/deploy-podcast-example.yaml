@@ -34,4 +34,4 @@ jobs:
       with:
         inlineScript: |
           DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
-          az deployment sub create --name $DEPLOYMENT_NAME --${LOCATION} --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
+          az deployment sub create --name $DEPLOYMENT_NAME --location ${LOCATION} --template-file main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
