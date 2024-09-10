@@ -26,11 +26,11 @@ jobs:
       uses: jsdaniell/create-json@v1.2.3
       with:
         name: parameters.json
-        json: ${{ vars.PARAMETERS_PODCAST_JSON }}
+        json: ${{ secrets.PARAMETERS_PODCAST_JSON }}
       
 
-    - name: Decode JSON secret
-      id: decode_json
+    - name: Extract values from JSON variable
+      id: extract_json
       run: |
         echo "BASE_PREFIX=$(jq -r '.parameters.basePrefix.value' parameters.json)" >> $GITHUB_ENV
         echo "LOCATION=$(jq -r '.parameters.location.value' parameters.json)" >> $GITHUB_ENV
