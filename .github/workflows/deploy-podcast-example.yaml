@@ -38,6 +38,7 @@ jobs:
     - name: Azure CLI script file
       uses: azure/cli@v2
       with:
+        azcliversion: 2.63.0
         inlineScript: |
           DEPLOYMENT_NAME=${BASE_PREFIX}-deployment-$(date +%s)
           az deployment sub create --name $DEPLOYMENT_NAME --location ${LOCATION} --template-file deploy/main.bicep --parameters parameters.json --parameters gitHubPat=${{ secrets.PAT_GITHUB }}
