@@ -43,6 +43,44 @@ resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
   }
 }
 
+// Create a network security group
+resource devcenterNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' = {
+  name: '${networkName}-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      {
+        name: 'AllowAllInbound'
+        properties: {
+          access: 'Allow'
+          description: 'Allow all inbound traffic'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+          direction: 'Inbound'
+          priority: 100
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+        }
+      }
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          access: 'Allow'
+          description: 'Allow all outbound traffic'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+          direction: 'Outbound'
+          priority: 100
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
 resource devcenterNetworkConnection 'Microsoft.DevCenter/networkconnections@2023-04-01' = {
   name: networkConnectionName
   location: location
