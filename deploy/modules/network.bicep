@@ -17,7 +17,45 @@ resource devcenter 'Microsoft.DevCenter/devcenters@2023-04-01' existing = {
   name: devcenterName
 }
 
-resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
+// Create a network security group
+resource devcenterNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' = {
+  name: '${networkName}-nsg'
+  location: location
+  properties: {
+    securityRules: [
+      // {
+      //   name: 'AllowAllInbound'
+      //   properties: {
+      //     access: 'Allow'
+      //     description: 'Allow all inbound traffic'
+      //     destinationAddressPrefix: '*'
+      //     destinationPortRange: '*'
+      //     direction: 'Inbound'
+      //     priority: 100
+      //     protocol: '*'
+      //     sourceAddressPrefix: '*'
+      //     sourcePortRange: '*'
+      //   }
+      // }
+      {
+        name: 'AllowAllOutbound'
+        properties: {
+          access: 'Allow'
+          description: 'Allow all outbound traffic'
+          destinationAddressPrefix: '*'
+          destinationPortRange: '*'
+          direction: 'Outbound'
+          priority: 100
+          protocol: '*'
+          sourceAddressPrefix: '*'
+          sourcePortRange: '*'
+        }
+      }
+    ]
+  }
+}
+
+resource devcenterVnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
   name: networkName
   location: location
   properties: {
@@ -34,50 +72,15 @@ resource devcenterVnet 'Microsoft.Network/virtualNetworks@2022-09-01' = {
           delegations: []
           privateEndpointNetworkPolicies: 'Disabled'
           privateLinkServiceNetworkPolicies: 'Enabled'
+          networkSecurityGroup: {
+            id: devcenterNsg.id
+          }
         }
         type: 'Microsoft.Network/virtualNetworks/subnets'
       }
     ]
     virtualNetworkPeerings: []
     enableDdosProtection: false
-  }
-}
-
-// Create a network security group
-resource devcenterNsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' = {
-  name: '${networkName}-nsg'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'AllowAllInbound'
-        properties: {
-          access: 'Allow'
-          description: 'Allow all inbound traffic'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-          direction: 'Inbound'
-          priority: 100
-          protocol: '*'
-          sourceAddressPrefix: '*'
-          sourcePortRange: '*'
-        }
-      }
-      {
-        name: 'AllowAllOutbound'
-        properties: {
-          access: 'Allow'
-          description: 'Allow all outbound traffic'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-          direction: 'Outbound'
-          priority: 100
-          protocol: '*'
-          sourceAddressPrefix: '*'
-          sourcePortRange: '*'
-        }
-      }
-    ]
   }
 }
 
