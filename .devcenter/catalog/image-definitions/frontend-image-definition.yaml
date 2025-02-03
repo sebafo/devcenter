@@ -1,26 +1,34 @@
 $schema: "1.0"
-name: "frontend-image"
-description: "This definition is for the podcast frontend engineering environment"
-
-## PRIVATE PREVIEW FEATURE
-image: "microsoftvisualstudio_windowsplustools_base-win11-gen2"
-enableScheduledRefresh: true
-scheduledTimePeriod: hour
-scheduledRecurrence: 24
-##
+name: "frontend-eng"
+# Using the "Windows 11 Enterprise 24H2" image as the base
+image: microsoftwindowsdesktop_windows-ent-cpc_win11-24H2-ent-cpc
+description: "This definition is for the eShop frontend engineering environment"
 
 tasks:
-  ### Run common DSC configurations for contoso engineering environments to create Dev Drive and install common tools
-  - name: winget
+  - name: ~/winget
     parameters:
-      downloadUrl: 'https://raw.githubusercontent.com/sebafo/devcenter/main/.devcenter/catalog/configuration/common-config.dsc.yaml'
-  ### Clone the podcast repository into the Workspaces directory
-  - name: git-clone
-    description: Clone this repository into z:\
+      downloadUrl: 'https://raw.githubusercontent.com/contoso-co/common-eng-sys/main/dsc-configurations/common-config.dsc.yaml'
+
+  - name: ~/winget
+    description: Install AZD
     parameters:
-      repositoryUrl: https://github.com/sebafo/podcastApp.git
-      directory: z:\
-  ### Run the DSC configuration for the frontend engineering environment
-  - name: winget
+      package:  Microsoft.Azd
+
+  - name: ~/winget
+    description: Install Visual Studio Code
     parameters:
-      downloadUrl: 'https://raw.githubusercontent.com/sebafo/devcenter/main/.devcenter/catalog/configuration/frontend.dsc.yaml'
+      package:  Microsoft.VisualStudioCode
+
+  - name: ~/powershell
+    parameters:
+      command: |
+        $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User') 
+        code --install-extension github.copilot
+        code --install-extension github.copilot-chat        
+        code --install-extension GitHub.vscode-github-actions
+        code --install-extension ms-vscode-remote.remote-wsl
+        code --install-extension ms-vscode-remote.remote-containers
+        code --install-extension ms-azuretools.azure-dev
+        code --install-extension ms-azuretools.vscode-docker
+        code --install-extension ms-dotnettools.csdevkit
+        code --install-extension ms-dotnettools.dotnet-maui

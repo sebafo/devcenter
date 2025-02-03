@@ -1,0 +1,19 @@
+$schema: "1.0"
+name: "frontend-image"
+description: "This definition is for the podcast frontend engineering environment"
+
+image: microsoftwindowsdesktop_windows-ent-cpc_win11-24H2-ent-cpc
+## PRIVATE PREVIEW FEATURE
+# image: "microsoftvisualstudio_windowsplustools_base-win11-gen2"
+# enableScheduledRefresh: true
+# scheduledTimePeriod: hour
+# scheduledRecurrence: 24
+##
+
+tasks:
+  ### Clone the podcast repository into the Workspaces directory
+  - name: git-clone
+    description: Clone this repository into z:\
+    parameters:
+      repositoryUrl: https://github.com/sebafo/podcastApp.git
+      directory: z:\
