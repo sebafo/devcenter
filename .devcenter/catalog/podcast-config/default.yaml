@@ -1,0 +1,11 @@
+$schema: "1.0"
+name: "PodcastWebUIConfig"
+tasks:
+  - name: choco
+    parameters:
+      package: nodejs
+  - name: git-clone
+    description: Clone this repository into z:\
+    parameters:
+      repositoryUrl: https://github.com/sebafo/podcastApp.git
+      directory: z:\
