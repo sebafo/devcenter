@@ -11,6 +11,9 @@ image: microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m36
 ##
 
 tasks:
+  - name: ~/winget
+    parameters:
+      downloadUrl: 'https://raw.githubusercontent.com/sebafo/devcenter/refs/heads/main/.devcenter/catalog/configuration/common-config.dsc.yaml'
   ### Clone the podcast repository into the Workspaces directory
   - name: git-clone
     description: Clone this repository into z:\
