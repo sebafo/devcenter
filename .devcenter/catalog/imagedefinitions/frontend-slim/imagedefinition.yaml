@@ -3,9 +3,9 @@ name: "frontend-slim"
 description: "This definition is for the podcast frontend engineering environment"
 
 image: microsoftvisualstudio_visualstudioplustools_vs-2022-ent-general-win11-m365-gen2 #microsoftwindowsdesktop_windows-ent-cpc_win11-24H2-ent-cpc
-enableScheduledRefresh: true
-scheduledTimePeriod: hour
-scheduledRecurrence: 24
+# enableScheduledRefresh: true
+# scheduledTimePeriod: hour
+# scheduledRecurrence: 24
 
 tasks:
   - name: ~/winget
